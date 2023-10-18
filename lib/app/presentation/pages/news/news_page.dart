@@ -1,6 +1,8 @@
 import 'package:flash_buzz/app/data/models/news_model.dart';
 import 'package:flash_buzz/app/presentation/bloc/top_headlines/top_headlines_bloc.dart';
 import 'package:flash_buzz/app/presentation/pages/news/widgets/news_list_tile.dart';
+import 'package:flash_buzz/app/presentation/widgets/default_404.dart';
+import 'package:flash_buzz/app/presentation/widgets/default_429.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_app_bar.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_loading_indicator.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_refresh_indicator.dart';
@@ -18,13 +20,37 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
+  bool _isInit = false;
+  final ScrollController _scrollCtrl = ScrollController();
+
+  void _getIsInit() {
+    _isInit = context.read<TopHeadlinesBloc>().isInit;
+  }
+
   void _getData() {
-    context.read<TopHeadlinesBloc>().add(const TopHeadlinesEvent());
+    if (!_isInit) {
+      context.read<TopHeadlinesBloc>().add(const TopHeadlinesEvent());
+      _isInit = true;
+    }
+  }
+
+  void _getMoreData() {
+    context.read<TopHeadlinesBloc>().getMoreTopHeadlines();
+  }
+
+  void _scrollListener() {
+    if (_scrollCtrl.offset >= _scrollCtrl.position.maxScrollExtent &&
+        !_scrollCtrl.position.outOfRange) {
+      setState(() {
+        _getMoreData();
+      });
+    }
   }
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(milliseconds: 300));
     if (mounted) {
+      _isInit = false;
       _getData();
       setState(() {});
     }
@@ -33,7 +59,15 @@ class _NewsPageState extends State<NewsPage> {
   @override
   void initState() {
     super.initState();
+    _getIsInit();
     _getData();
+    _scrollCtrl.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollCtrl.removeListener(_scrollListener);
   }
 
   @override
@@ -66,28 +100,37 @@ class _NewsPageState extends State<NewsPage> {
 
   Widget _flashBuzzApp() {
     return DefaultRefreshIndicator(
-      onRefresh: () => _onRefresh(),
+      onRefresh: _onRefresh,
       child: BlocBuilder<TopHeadlinesBloc, TopHeadlinesState>(
         builder: (context, state) {
-          if (state is TopHeadlinesInitial) {
-            return Container();
-          } else if (state is TopHeadlinesLoading) {
-            return const DefaultLoadingIndicator();
+          if (state is TopHeadlinesInitial || state is TopHeadlinesLoading) {
+            return state is TopHeadlinesLoading
+                ? const DefaultLoadingIndicator()
+                : Container();
           } else if (state is TopHeadlinesLoaded) {
+            int? totalResults = state.newsModel.totalResults;
             List<News>? listNews = state.newsModel.articles;
+            int newsLength = listNews?.length ?? 0;
 
             return ListView.builder(
+              controller: _scrollCtrl,
               padding: const EdgeInsets.all(defaultMargin),
-              itemCount: listNews?.length,
+              itemCount: newsLength,
               itemBuilder: (context, i) {
                 News? news = listNews?[i];
 
+                if (i + 1 == newsLength && totalResults != newsLength) {
+                  return const DefaultLoadingIndicator();
+                }
                 return _newsListTile(news);
               },
             );
-          } else {
-            return Container();
+          } else if (state is TopHeadlinesError) {
+            return state.message.contains('429')
+                ? const Default429()
+                : const Default404();
           }
+          return const Default404();
         },
       ),
     );

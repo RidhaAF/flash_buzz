@@ -8,7 +8,9 @@ part 'top_headlines_state.dart';
 
 class TopHeadlinesBloc extends Bloc<TopHeadlinesEvent, TopHeadlinesState> {
   final NewsUsecase newsUsecase;
+  bool isInit = false;
   late NewsModel newsModel;
+  int page = 1;
 
   TopHeadlinesBloc(this.newsUsecase) : super(TopHeadlinesInitial()) {
     on<TopHeadlinesEvent>((event, emit) async {
@@ -26,6 +28,21 @@ class TopHeadlinesBloc extends Bloc<TopHeadlinesEvent, TopHeadlinesState> {
       emit(TopHeadlinesLoaded(newsModel));
     } catch (e) {
       emit(TopHeadlinesError(e.toString()));
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> getMoreTopHeadlines() async {
+    try {
+      if (newsModel.articles != null &&
+          newsModel.totalResults != null &&
+          newsModel.articles!.length < newsModel.totalResults!) {
+        page++;
+      }
+      NewsModel newestNews = await newsUsecase.getTopHeadlines(page: page);
+      newsModel.articles?.addAll(newestNews.articles ?? []);
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
 }
