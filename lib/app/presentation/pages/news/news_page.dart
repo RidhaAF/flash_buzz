@@ -1,4 +1,5 @@
 import 'package:flash_buzz/app/data/models/news_model.dart';
+import 'package:flash_buzz/app/presentation/bloc/page/page_bloc.dart';
 import 'package:flash_buzz/app/presentation/bloc/top_headlines/top_headlines_bloc.dart';
 import 'package:flash_buzz/app/presentation/pages/news/widgets/news_list_tile.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_404.dart';
@@ -9,7 +10,6 @@ import 'package:flash_buzz/app/presentation/widgets/default_refresh_indicator.da
 import 'package:flash_buzz/app/utils/constants/app_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class NewsPage extends StatefulWidget {
@@ -82,7 +82,9 @@ class _NewsPageState extends State<NewsPage> {
       ),
       actions: [
         IconButton(
-          onPressed: () => context.push('/search'),
+          onPressed: () {
+            context.read<PageBloc>().add(const PageIndexChanged(1));
+          },
           tooltip: 'Search',
           icon: Icon(
             Icons.search_rounded,
