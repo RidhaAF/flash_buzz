@@ -53,6 +53,8 @@ class NewsListTile extends StatelessWidget {
                 ),
                 errorBuilder: (context, error, stackTrace) =>
                     const DefaultImageErrorBuilder(),
+                cacheWidth: 96,
+                cacheHeight: 64,
               ),
             )
           : leading,

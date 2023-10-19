@@ -29,17 +29,18 @@ class _NewsPageState extends State<NewsPage> {
     }
   }
 
-  void _getMoreData() {
-    context.read<TopHeadlinesBloc>().getMoreTopHeadlines();
+  Future<void> _getMoreData() async {
+    await context.read<TopHeadlinesBloc>().getMoreTopHeadlines();
+    if (mounted) setState(() {});
   }
 
   void _scrollListener() {
-    if (_scrollCtrl.offset >= _scrollCtrl.position.maxScrollExtent &&
-        !_scrollCtrl.position.outOfRange) {
-      setState(() {
+    _scrollCtrl.addListener(() {
+      if (_scrollCtrl.offset >= _scrollCtrl.position.maxScrollExtent &&
+          !_scrollCtrl.position.outOfRange) {
         _getMoreData();
-      });
-    }
+      }
+    });
   }
 
   Future<void> _onRefresh() async {
@@ -55,13 +56,13 @@ class _NewsPageState extends State<NewsPage> {
   void initState() {
     super.initState();
     _getData();
-    _scrollCtrl.addListener(_scrollListener);
+    _scrollListener();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _scrollCtrl.removeListener(_scrollListener);
+    _scrollCtrl.dispose();
   }
 
   @override
@@ -114,7 +115,10 @@ class _NewsPageState extends State<NewsPage> {
                 News? news = listNews?[i];
 
                 if (i + 1 == newsLength && totalResults != newsLength) {
-                  return const DefaultLoadingIndicator();
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: defaultMargin),
+                    child: DefaultLoadingIndicator(),
+                  );
                 }
                 return _newsListTile(news);
               },

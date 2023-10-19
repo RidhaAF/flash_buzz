@@ -24,11 +24,12 @@ class TopHeadlinesBloc extends Bloc<TopHeadlinesEvent, TopHeadlinesState> {
   ) async {
     try {
       emit(TopHeadlinesLoading());
-      newsModel = await newsUsecase.getTopHeadlines();
+      page = 1;
+      newsModel = await newsUsecase.getTopHeadlines(page: page);
       emit(TopHeadlinesLoaded(newsModel));
     } catch (e) {
       emit(TopHeadlinesError(e.toString()));
-      throw Exception(e.toString());
+      throw Exception('Failed to fetch top headlines: $e');
     }
   }
 
@@ -38,11 +39,15 @@ class TopHeadlinesBloc extends Bloc<TopHeadlinesEvent, TopHeadlinesState> {
           newsModel.totalResults != null &&
           newsModel.articles!.length < newsModel.totalResults!) {
         page++;
+        final NewsModel newestNews =
+            await newsUsecase.getTopHeadlines(page: page);
+
+        if (newestNews.articles != null) {
+          newsModel.articles!.addAll(newestNews.articles!);
+        }
       }
-      NewsModel newestNews = await newsUsecase.getTopHeadlines(page: page);
-      newsModel.articles?.addAll(newestNews.articles ?? []);
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception('Failed to fetch more top headlines: $e');
     }
   }
 }
