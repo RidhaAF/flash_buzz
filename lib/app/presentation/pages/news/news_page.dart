@@ -20,17 +20,12 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
-  bool _isInit = false;
   final ScrollController _scrollCtrl = ScrollController();
 
-  void _getIsInit() {
-    _isInit = context.read<TopHeadlinesBloc>().isInit;
-  }
-
   void _getData() {
-    if (!_isInit) {
+    if (!context.read<TopHeadlinesBloc>().isInit) {
       context.read<TopHeadlinesBloc>().add(const TopHeadlinesEvent());
-      _isInit = true;
+      context.read<TopHeadlinesBloc>().isInit = true;
     }
   }
 
@@ -50,7 +45,7 @@ class _NewsPageState extends State<NewsPage> {
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(milliseconds: 300));
     if (mounted) {
-      _isInit = false;
+      context.read<TopHeadlinesBloc>().isInit = false;
       _getData();
       setState(() {});
     }
@@ -59,7 +54,6 @@ class _NewsPageState extends State<NewsPage> {
   @override
   void initState() {
     super.initState();
-    _getIsInit();
     _getData();
     _scrollCtrl.addListener(_scrollListener);
   }
