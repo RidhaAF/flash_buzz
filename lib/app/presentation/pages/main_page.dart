@@ -1,7 +1,7 @@
-import 'package:flash_buzz/app/presentation/pages/favorites/favorites_page.dart';
-import 'package:flash_buzz/app/presentation/pages/news/news_page.dart';
-import 'package:flash_buzz/app/presentation/pages/search/search_page.dart';
+import 'package:flash_buzz/app/presentation/bloc/page/page_bloc.dart';
+import 'package:flash_buzz/app/presentation/widgets/default_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -11,42 +11,21 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int _selectedIndex = 0;
-  final List _pages = [
-    const NewsPage(),
-    const SearchPage(),
-    const FavoritesPage(),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.newspaper_rounded),
-            label: 'News',
-            tooltip: 'News',
+    return BlocBuilder<PageBloc, int>(
+      builder: (context, selectedIndex) {
+        return Scaffold(
+          body: DefaultBottomNavigationBar().pages.elementAt(selectedIndex),
+          bottomNavigationBar: BottomNavigationBar(
+            items: DefaultBottomNavigationBar().items,
+            currentIndex: selectedIndex,
+            onTap: (index) {
+              context.read<PageBloc>().add(PageIndexChanged(index));
+            },
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_rounded),
-            label: 'Search',
-            tooltip: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_rounded),
-            label: 'Favorites',
-            tooltip: 'Favorites',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-      ),
+        );
+      },
     );
   }
 }

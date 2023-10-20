@@ -7,8 +7,8 @@ class NewsRepositoryImpl implements NewsRepository {
   Dio dio = DioHelper.dio;
 
   @override
-  Future<NewsModel> getTopHeadlines() async {
-    String url = '/top-headlines?pageSize=10&page=1';
+  Future<NewsModel> getTopHeadlines({required int page}) async {
+    String url = '/top-headlines?pageSize=10&page=$page';
 
     try {
       Response res = await dio.get(url);

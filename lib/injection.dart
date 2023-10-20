@@ -1,6 +1,7 @@
 import 'package:flash_buzz/app/data/repositories/news_repository_impl.dart';
 import 'package:flash_buzz/app/domain/repositories/news_repository.dart';
 import 'package:flash_buzz/app/domain/usecases/news_usecase.dart';
+import 'package:flash_buzz/app/presentation/bloc/page/page_bloc.dart';
 import 'package:flash_buzz/app/presentation/bloc/top_headlines/top_headlines_bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -11,5 +12,6 @@ void setup() {
 
   di.registerLazySingleton(() => NewsUsecase(di<NewsRepository>()));
 
+  di.registerFactory(() => PageBloc());
   di.registerFactory(() => TopHeadlinesBloc(di<NewsUsecase>()));
 }
