@@ -89,6 +89,7 @@ class NewsListTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(defaultRadius),
       ),
       contentPadding: EdgeInsets.zero,
+      onTap: onTap,
     );
   }
 }

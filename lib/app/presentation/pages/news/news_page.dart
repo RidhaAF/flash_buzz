@@ -11,6 +11,7 @@ import 'package:flash_buzz/app/utils/constants/app_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:url_launcher/url_launcher.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -49,6 +50,12 @@ class _NewsPageState extends State<NewsPage> {
       context.read<TopHeadlinesBloc>().isInit = false;
       _getData();
       setState(() {});
+    }
+  }
+
+  Future<void> _openNews(String url) async {
+    if (!await launchUrl(Uri.parse(url))) {
+      throw Exception('Could not launch $url');
     }
   }
 
@@ -142,6 +149,7 @@ class _NewsPageState extends State<NewsPage> {
     String author = news?.author ?? '';
     String publishedAt = timeago.format(news?.publishedAt ?? DateTime.now());
     String subtitle = '$author - $publishedAt';
+    String url = news?.url ?? '';
 
     return NewsListTile(
       isLeadingImage: true,
@@ -150,6 +158,7 @@ class _NewsPageState extends State<NewsPage> {
       titleString: title,
       isSubtitleText: true,
       subtitleString: subtitle,
+      onTap: () => _openNews(url),
     );
   }
 }
