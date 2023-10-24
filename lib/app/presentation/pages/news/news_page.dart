@@ -1,7 +1,7 @@
 import 'package:flash_buzz/app/data/models/news_model.dart';
 import 'package:flash_buzz/app/presentation/bloc/page/page_bloc.dart';
 import 'package:flash_buzz/app/presentation/bloc/top_headlines/top_headlines_bloc.dart';
-import 'package:flash_buzz/app/presentation/pages/news/widgets/news_list_tile.dart';
+import 'package:flash_buzz/app/presentation/widgets/news_list_tile.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_404.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_429.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_app_bar.dart';
@@ -10,8 +10,8 @@ import 'package:flash_buzz/app/presentation/widgets/default_refresh_indicator.da
 import 'package:flash_buzz/app/utils/constants/app_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:url_launcher/url_launcher.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -53,10 +53,14 @@ class _NewsPageState extends State<NewsPage> {
     }
   }
 
-  Future<void> _openNews(String url) async {
-    if (!await launchUrl(Uri.parse(url))) {
-      throw Exception('Could not launch $url');
-    }
+  void _openNewsWebView(News? news) {
+    context.pushNamed(
+      'news-web-view',
+      pathParameters: {
+        'title': news?.title ?? '',
+        'url': news?.url ?? '',
+      },
+    );
   }
 
   @override
@@ -149,7 +153,6 @@ class _NewsPageState extends State<NewsPage> {
     String author = news?.author ?? '';
     String publishedAt = timeago.format(news?.publishedAt ?? DateTime.now());
     String subtitle = '$author - $publishedAt';
-    String url = news?.url ?? '';
 
     return NewsListTile(
       isLeadingImage: true,
@@ -158,7 +161,7 @@ class _NewsPageState extends State<NewsPage> {
       titleString: title,
       isSubtitleText: true,
       subtitleString: subtitle,
-      onTap: () => _openNews(url),
+      onTap: () => _openNewsWebView(news!),
     );
   }
 }

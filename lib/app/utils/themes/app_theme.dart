@@ -48,6 +48,7 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       backgroundColor: primaryColor,
       foregroundColor: secondaryColor,
+      iconTheme: IconThemeData(color: whiteColor),
       elevation: 0.0,
       titleTextStyle: TextStyle(
         fontFamily: 'PublicSans',
@@ -197,6 +198,9 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       backgroundColor: primaryColor,
       foregroundColor: secondaryColor,
+      iconTheme: const IconThemeData(
+        color: Color(0XFFFFFFFA),
+      ),
       elevation: 0.0,
       titleTextStyle: TextStyle(
         fontFamily: 'PublicSans',
