@@ -38,7 +38,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     SearchEvent event,
     Emitter<SearchState> emit,
   ) {
-    searchModel = SearchModel();
     emit(SearchInitial());
+    searchModel = SearchModel();
   }
 }
