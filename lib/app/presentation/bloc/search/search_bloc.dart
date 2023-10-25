@@ -9,6 +9,7 @@ part 'search_state.dart';
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final SearchUsecase searchUsecase;
   late SearchModel searchModel;
+  int page = 1;
 
   SearchBloc(this.searchUsecase) : super(SearchInitial()) {
     on<SearchEvent>((event, emit) async {
@@ -26,11 +27,33 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         return;
       }
       emit(SearchLoading());
-      searchModel = await searchUsecase.searchNews(query: event.query);
+      page = 1;
+      searchModel = await searchUsecase.searchNews(
+        query: event.query,
+        page: page,
+      );
       emit(SearchLoaded(searchModel));
     } catch (e) {
       emit(SearchError(e.toString()));
       throw Exception('Failed to search: $e');
+    }
+  }
+
+  Future<void> getMoreSearchNews(String query) async {
+    try {
+      if (searchModel.articles != null &&
+          searchModel.totalResults != null &&
+          searchModel.articles!.length < searchModel.totalResults!) {
+        page++;
+        final SearchModel newestSearch =
+            await searchUsecase.searchNews(query: query, page: page);
+
+        if (newestSearch.articles != null) {
+          searchModel.articles!.addAll(newestSearch.articles!);
+        }
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch more search news: $e');
     }
   }
 

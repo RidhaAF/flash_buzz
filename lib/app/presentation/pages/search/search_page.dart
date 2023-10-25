@@ -9,6 +9,7 @@ import 'package:flash_buzz/app/presentation/widgets/default_search_bar.dart';
 import 'package:flash_buzz/app/presentation/widgets/news_list_tile.dart';
 import 'package:flash_buzz/app/utils/constants/app_constant.dart';
 import 'package:flash_buzz/app/utils/helpers/open_in_web_view.dart';
+import 'package:flash_buzz/app/utils/helpers/scroll_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -23,6 +24,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchCtrl = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
+  final ScrollController _scrollCtrl = ScrollController();
   late SearchBloc _searchBloc;
   late Timer _timer;
 
@@ -47,6 +49,19 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  Future<void> _getMoreSearchNews() async {
+    await _searchBloc.getMoreSearchNews(_searchCtrl.text);
+    if (mounted) setState(() {});
+  }
+
+  void _scrollListener() {
+    _scrollCtrl.addListener(() {
+      if (ScrollHelper.isScrollEnd(_scrollCtrl)) {
+        _getMoreSearchNews();
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -54,6 +69,7 @@ class _SearchPageState extends State<SearchPage> {
     _clearSearch();
     _searchFocus.requestFocus();
     _timer = Timer(const Duration(milliseconds: 500), () {});
+    _scrollListener();
   }
 
   @override
@@ -62,6 +78,7 @@ class _SearchPageState extends State<SearchPage> {
     _searchCtrl.dispose();
     _searchFocus.dispose();
     _timer.cancel();
+    _scrollCtrl.dispose();
   }
 
   @override
@@ -124,6 +141,7 @@ class _SearchPageState extends State<SearchPage> {
     int newsLength = listNews?.length ?? 0;
 
     return ListView.builder(
+      controller: _scrollCtrl,
       padding: const EdgeInsets.all(defaultMargin),
       itemCount: newsLength,
       itemBuilder: (_, i) {

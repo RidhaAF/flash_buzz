@@ -9,6 +9,7 @@ import 'package:flash_buzz/app/presentation/widgets/default_loading_indicator.da
 import 'package:flash_buzz/app/presentation/widgets/default_refresh_indicator.dart';
 import 'package:flash_buzz/app/utils/constants/app_constant.dart';
 import 'package:flash_buzz/app/utils/helpers/open_in_web_view.dart';
+import 'package:flash_buzz/app/utils/helpers/scroll_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -38,8 +39,7 @@ class _NewsPageState extends State<NewsPage> {
 
   void _scrollListener() {
     _scrollCtrl.addListener(() {
-      if (_scrollCtrl.offset >= _scrollCtrl.position.maxScrollExtent &&
-          !_scrollCtrl.position.outOfRange) {
+      if (ScrollHelper.isScrollEnd(_scrollCtrl)) {
         _getMoreData();
       }
     });

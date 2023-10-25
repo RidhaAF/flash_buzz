@@ -7,8 +7,11 @@ class SearchRepositoryImpl implements SearchRepository {
   Dio dio = DioHelper.dio;
 
   @override
-  Future<SearchModel> searchNews({required String query}) async {
-    String url = '/everything?q=$query';
+  Future<SearchModel> searchNews({
+    required String query,
+    required int page,
+  }) async {
+    String url = '/everything?q=$query&pageSize=10&page=$page';
 
     try {
       Response res = await dio.get(url);
