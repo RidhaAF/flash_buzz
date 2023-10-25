@@ -8,9 +8,9 @@ import 'package:flash_buzz/app/presentation/widgets/default_loading_indicator.da
 import 'package:flash_buzz/app/presentation/widgets/default_search_bar.dart';
 import 'package:flash_buzz/app/presentation/widgets/news_list_tile.dart';
 import 'package:flash_buzz/app/utils/constants/app_constant.dart';
+import 'package:flash_buzz/app/utils/helpers/open_in_web_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class SearchPage extends StatefulWidget {
@@ -45,16 +45,6 @@ class _SearchPageState extends State<SearchPage> {
       _searchCtrl.clear();
       _searchBloc.add(const ClearSearch());
     });
-  }
-
-  void _openNewsWebView(News? news) {
-    context.pushNamed(
-      'news-web-view',
-      pathParameters: {
-        'title': news?.title ?? '',
-        'url': news?.url ?? '',
-      },
-    );
   }
 
   @override
@@ -158,6 +148,7 @@ class _SearchPageState extends State<SearchPage> {
     String author = news?.author ?? '-';
     String publishedAt = timeago.format(news?.publishedAt ?? DateTime.now());
     String subtitle = '$author | $publishedAt';
+    String url = news?.url ?? '';
 
     return NewsListTile(
       isLeadingImage: true,
@@ -166,7 +157,7 @@ class _SearchPageState extends State<SearchPage> {
       titleString: title,
       isSubtitleText: true,
       subtitleString: subtitle,
-      onTap: () => _openNewsWebView(news!),
+      onTap: () => OpenInWebView.news(context, title: title, url: url),
     );
   }
 }
