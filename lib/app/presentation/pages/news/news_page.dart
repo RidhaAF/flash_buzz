@@ -8,9 +8,10 @@ import 'package:flash_buzz/app/presentation/widgets/default_app_bar.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_loading_indicator.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_refresh_indicator.dart';
 import 'package:flash_buzz/app/utils/constants/app_constant.dart';
+import 'package:flash_buzz/app/utils/helpers/open_in_web_view.dart';
+import 'package:flash_buzz/app/utils/helpers/scroll_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class NewsPage extends StatefulWidget {
@@ -38,8 +39,7 @@ class _NewsPageState extends State<NewsPage> {
 
   void _scrollListener() {
     _scrollCtrl.addListener(() {
-      if (_scrollCtrl.offset >= _scrollCtrl.position.maxScrollExtent &&
-          !_scrollCtrl.position.outOfRange) {
+      if (ScrollHelper.isScrollEnd(_scrollCtrl)) {
         _getMoreData();
       }
     });
@@ -52,16 +52,6 @@ class _NewsPageState extends State<NewsPage> {
       _getData();
       setState(() {});
     }
-  }
-
-  void _openNewsWebView(News? news) {
-    context.pushNamed(
-      'news-web-view',
-      pathParameters: {
-        'title': news?.title ?? '',
-        'url': news?.url ?? '',
-      },
-    );
   }
 
   @override
@@ -163,6 +153,7 @@ class _NewsPageState extends State<NewsPage> {
     String author = news?.author ?? '-';
     String publishedAt = timeago.format(news?.publishedAt ?? DateTime.now());
     String subtitle = '$author | $publishedAt';
+    String url = news?.url ?? '';
 
     return NewsListTile(
       isLeadingImage: true,
@@ -171,7 +162,7 @@ class _NewsPageState extends State<NewsPage> {
       titleString: title,
       isSubtitleText: true,
       subtitleString: subtitle,
-      onTap: () => _openNewsWebView(news!),
+      onTap: () => OpenInWebView.news(context, title: title, url: url),
     );
   }
 }
