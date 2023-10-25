@@ -10,7 +10,6 @@ class DioHelper {
       receiveTimeout: defaultDuration,
       sendTimeout: defaultDuration,
       queryParameters: {
-        'country': Env.country,
         'apiKey': Env.apiKey,
       },
       receiveDataWhenStatusError: true,
