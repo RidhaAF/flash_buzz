@@ -22,16 +22,17 @@ class NewsPage extends StatefulWidget {
 
 class _NewsPageState extends State<NewsPage> {
   final ScrollController _scrollCtrl = ScrollController();
+  late TopHeadlinesBloc _topHeadlinesBloc;
 
   void _getData() {
-    if (!context.read<TopHeadlinesBloc>().isInit) {
-      context.read<TopHeadlinesBloc>().add(const TopHeadlinesEvent());
-      context.read<TopHeadlinesBloc>().isInit = true;
+    if (!_topHeadlinesBloc.isInit) {
+      _topHeadlinesBloc.add(const TopHeadlinesEvent());
+      _topHeadlinesBloc.isInit = true;
     }
   }
 
   Future<void> _getMoreData() async {
-    await context.read<TopHeadlinesBloc>().getMoreTopHeadlines();
+    await _topHeadlinesBloc.getMoreTopHeadlines();
     if (mounted) setState(() {});
   }
 
@@ -47,7 +48,7 @@ class _NewsPageState extends State<NewsPage> {
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(milliseconds: 300));
     if (mounted) {
-      context.read<TopHeadlinesBloc>().isInit = false;
+      _topHeadlinesBloc.isInit = false;
       _getData();
       setState(() {});
     }
@@ -66,6 +67,7 @@ class _NewsPageState extends State<NewsPage> {
   @override
   void initState() {
     super.initState();
+    _topHeadlinesBloc = context.read<TopHeadlinesBloc>();
     _getData();
     _scrollListener();
   }
@@ -92,17 +94,21 @@ class _NewsPageState extends State<NewsPage> {
         fontWeight: bold,
       ),
       actions: [
-        IconButton(
-          onPressed: () {
-            context.read<PageBloc>().add(const PageIndexChanged(1));
-          },
-          tooltip: 'Search',
-          icon: Icon(
-            Icons.search_rounded,
-            color: whiteColor,
-          ),
-        ),
+        _searchButton(),
       ],
+    );
+  }
+
+  Widget _searchButton() {
+    return IconButton(
+      onPressed: () {
+        context.read<PageBloc>().add(const PageIndexChanged(1));
+      },
+      tooltip: 'Search',
+      icon: Icon(
+        Icons.search_rounded,
+        color: whiteColor,
+      ),
     );
   }
 
@@ -111,48 +117,52 @@ class _NewsPageState extends State<NewsPage> {
       onRefresh: _onRefresh,
       child: BlocBuilder<TopHeadlinesBloc, TopHeadlinesState>(
         builder: (context, state) {
-          if (state is TopHeadlinesInitial || state is TopHeadlinesLoading) {
-            return state is TopHeadlinesLoading
-                ? const DefaultLoadingIndicator()
-                : Container();
+          if (state is TopHeadlinesLoading) {
+            return const DefaultLoadingIndicator();
           } else if (state is TopHeadlinesLoaded) {
-            int? totalResults = state.newsModel.totalResults;
-            List<News>? listNews = state.newsModel.articles;
-            int newsLength = listNews?.length ?? 0;
-
-            return ListView.builder(
-              controller: _scrollCtrl,
-              padding: const EdgeInsets.all(defaultMargin),
-              itemCount: newsLength,
-              itemBuilder: (context, i) {
-                News? news = listNews?[i];
-
-                if (i + 1 == newsLength && totalResults != newsLength) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: defaultMargin),
-                    child: DefaultLoadingIndicator(),
-                  );
-                }
-                return _newsListTile(news);
-              },
-            );
+            return _newsListView(state.newsModel);
           } else if (state is TopHeadlinesError) {
             return state.message.contains('429')
                 ? const Default429()
                 : const Default404();
           }
-          return const Default404();
+          return Container();
         },
       ),
     );
   }
 
+  Widget _newsListView(NewsModel newsModel) {
+    int? totalResults = newsModel.totalResults;
+    List<News>? listNews = newsModel.articles;
+    int newsLength = listNews?.length ?? 0;
+
+    return ListView.builder(
+      controller: _scrollCtrl,
+      padding: const EdgeInsets.all(defaultMargin),
+      itemCount: newsLength,
+      itemBuilder: (_, i) {
+        News? news = listNews?[i];
+        bool isLastIndex = i + 1 == newsLength;
+        bool isTotalResultsEqual = totalResults == newsLength;
+
+        if (isLastIndex && !isTotalResultsEqual) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: defaultMargin),
+            child: DefaultLoadingIndicator(),
+          );
+        }
+        return _newsListTile(news);
+      },
+    );
+  }
+
   Widget _newsListTile(News? news) {
     String image = news?.urlToImage ?? '';
-    String title = news?.title ?? '';
-    String author = news?.author ?? '';
+    String title = news?.title ?? '-';
+    String author = news?.author ?? '-';
     String publishedAt = timeago.format(news?.publishedAt ?? DateTime.now());
-    String subtitle = '$author - $publishedAt';
+    String subtitle = '$author | $publishedAt';
 
     return NewsListTile(
       isLeadingImage: true,

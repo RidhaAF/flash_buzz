@@ -40,15 +40,19 @@ class _NewsWebViewPageState extends State<NewsWebViewPage> {
     return DefaultAppBar(
       title: widget.title,
       actions: [
-        IconButton(
-          onPressed: () => _webViewController.reload(),
-          tooltip: 'Refresh',
-          icon: Icon(
-            Icons.refresh,
-            color: whiteColor,
-          ),
-        ),
+        _refreshButton(),
       ],
+    );
+  }
+
+  Widget _refreshButton() {
+    return IconButton(
+      onPressed: () => _webViewController.reload(),
+      tooltip: 'Refresh',
+      icon: Icon(
+        Icons.refresh,
+        color: whiteColor,
+      ),
     );
   }
 }
