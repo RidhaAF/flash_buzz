@@ -48,6 +48,7 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       backgroundColor: primaryColor,
       foregroundColor: secondaryColor,
+      iconTheme: IconThemeData(color: whiteColor),
       elevation: 0.0,
       titleTextStyle: TextStyle(
         fontFamily: 'PublicSans',
@@ -62,9 +63,12 @@ class AppTheme {
     ),
     searchBarTheme: SearchBarThemeData(
       elevation: MaterialStateProperty.all(0),
-      backgroundColor: MaterialStateProperty.all(
-        primaryColor.withOpacity(0.1),
-      ),
+      backgroundColor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.focused)) {
+          return primaryColor.withOpacity(0.1);
+        }
+        return bgColorLight2;
+      }),
       shape: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.focused)) {
           return RoundedRectangleBorder(
@@ -83,13 +87,14 @@ class AppTheme {
       }),
       hintStyle: MaterialStateProperty.all(
         TextStyle(
-          color: greyColor,
+          color: mutedColor,
           fontFamily: 'PublicSans',
           fontSize: calloutFS,
         ),
       ),
       textStyle: MaterialStateProperty.all(
         TextStyle(
+          color: blackColor,
           fontFamily: 'PublicSans',
           fontSize: calloutFS,
         ),
@@ -197,6 +202,9 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       backgroundColor: primaryColor,
       foregroundColor: secondaryColor,
+      iconTheme: const IconThemeData(
+        color: Color(0XFFFFFFFA),
+      ),
       elevation: 0.0,
       titleTextStyle: TextStyle(
         fontFamily: 'PublicSans',
@@ -211,9 +219,12 @@ class AppTheme {
     ),
     searchBarTheme: SearchBarThemeData(
       elevation: MaterialStateProperty.all(0),
-      backgroundColor: MaterialStateProperty.all(
-        primaryColor.withOpacity(0.1),
-      ),
+      backgroundColor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.focused)) {
+          return primaryColor.withOpacity(0.1);
+        }
+        return bgColorDark3;
+      }),
       shape: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.focused)) {
           return RoundedRectangleBorder(
@@ -232,13 +243,14 @@ class AppTheme {
       }),
       hintStyle: MaterialStateProperty.all(
         TextStyle(
-          color: greyColor,
+          color: mutedColor,
           fontFamily: 'PublicSans',
           fontSize: calloutFS,
         ),
       ),
       textStyle: MaterialStateProperty.all(
         TextStyle(
+          color: whiteColor,
           fontFamily: 'PublicSans',
           fontSize: calloutFS,
         ),

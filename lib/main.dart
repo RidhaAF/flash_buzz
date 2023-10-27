@@ -1,4 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:flash_buzz/app/presentation/bloc/page/page_bloc.dart';
+import 'package:flash_buzz/app/presentation/bloc/search/search_bloc.dart';
 import 'package:flash_buzz/app/presentation/bloc/top_headlines/top_headlines_bloc.dart';
 import 'package:flash_buzz/app/routes/app_pages.dart';
 import 'package:flash_buzz/app/utils/themes/app_theme.dart';
@@ -17,13 +19,17 @@ class MyApp extends StatelessWidget {
   final AdaptiveThemeMode? savedThemeMode;
   MyApp({super.key, this.savedThemeMode});
 
+  final PageBloc pageBloc = di<PageBloc>();
   final TopHeadlinesBloc topHeadlinesBloc = di<TopHeadlinesBloc>();
+  final SearchBloc searchBloc = di<SearchBloc>();
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => pageBloc),
         BlocProvider(create: (context) => topHeadlinesBloc),
+        BlocProvider(create: (context) => searchBloc),
       ],
       child: AdaptiveTheme(
         light: AppTheme.light,

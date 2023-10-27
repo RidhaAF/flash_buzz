@@ -6,7 +6,7 @@ class NewsUsecase {
 
   NewsUsecase(this._newsRepository);
 
-  Future<NewsModel> getTopHeadlines() async {
-    return await _newsRepository.getTopHeadlines();
+  Future<NewsModel> getTopHeadlines({int page = 1}) async {
+    return await _newsRepository.getTopHeadlines(page: page);
   }
 }
