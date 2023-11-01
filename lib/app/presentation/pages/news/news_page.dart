@@ -7,6 +7,7 @@ import 'package:flash_buzz/app/presentation/widgets/default_429.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_app_bar.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_loading_indicator.dart';
 import 'package:flash_buzz/app/presentation/widgets/default_refresh_indicator.dart';
+import 'package:flash_buzz/app/presentation/widgets/shimmers/news_list_tile_shimmer.dart';
 import 'package:flash_buzz/app/utils/constants/app_constant.dart';
 import 'package:flash_buzz/app/utils/helpers/open_in_web_view.dart';
 import 'package:flash_buzz/app/utils/helpers/scroll_helper.dart';
@@ -108,7 +109,7 @@ class _NewsPageState extends State<NewsPage> {
       child: BlocBuilder<TopHeadlinesBloc, TopHeadlinesState>(
         builder: (context, state) {
           if (state is TopHeadlinesLoading) {
-            return const DefaultLoadingIndicator();
+            return const NewsListTileShimmer();
           } else if (state is TopHeadlinesLoaded) {
             return _newsListView(state.newsModel);
           } else if (state is TopHeadlinesError) {
