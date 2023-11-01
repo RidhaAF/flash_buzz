@@ -8,6 +8,7 @@ import 'package:flash_buzz/app/presentation/widgets/default_loading_indicator.da
 import 'package:flash_buzz/app/presentation/widgets/default_search_bar.dart';
 import 'package:flash_buzz/app/presentation/widgets/news_list_tile.dart';
 import 'package:flash_buzz/app/utils/constants/app_constant.dart';
+import 'package:flash_buzz/app/utils/helpers/dark_mode_helper.dart';
 import 'package:flash_buzz/app/utils/helpers/open_in_web_view.dart';
 import 'package:flash_buzz/app/utils/helpers/scroll_helper.dart';
 import 'package:flutter/material.dart';
@@ -84,10 +85,14 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const DefaultAppBar(
-        title: 'Search',
+      appBar: DefaultAppBar(
+        backgroundColor: Colors.transparent,
+        statusBarBrightness: DarkModeHelper.isDarkMode(context)
+            ? Brightness.dark
+            : Brightness.light,
       ),
       body: _searchNews(),
+      primary: false,
     );
   }
 
