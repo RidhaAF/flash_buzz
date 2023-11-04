@@ -1,16 +1,22 @@
-# flash_buzz
+# Flash Buzz
 
-A new Flutter project.
+Flash Buzz is a cutting-edge news and information app that brings you the latest updates, trending stories, and breaking news from around the world in an instant. With its sleek and user-friendly interface, Flash Buzz provides you with a seamless and efficient way to stay informed.
 
-## Getting Started
+## Packages
 
-This project is a starting point for a Flutter application.
+You can see the packages used in this project in the file [pubspec.yaml](pubspec.yaml).
 
-A few resources to get you started if this is your first Flutter project:
+## Installation and Usage
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+To try the app, you can clone this repository and run it on your local machine:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+$ git clone https://github.com/RidhaAF/flash_buzz.git
+$ cd flash_buzz
+```
+
+Get all the dependencies:
+
+```
+$ flutter pub get
+```
